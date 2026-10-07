@@ -43,3 +43,5 @@ GODOT=/path/to/godot game/tests/run_autotest.sh none    # builds nothing, must l
 ```
 
 Note for Android export (step 4): JSON files are not resources, so the export preset must include `*.json` in "Filters to export non-resource files".
+
+![Vertical slice](docs/screenshots/slice_upgrade_menu.png)
