@@ -1,0 +1,331 @@
+{
+ "worlds": [
+  {
+   "name": "Verdant Vale",
+   "accent": "#9be37a",
+   "menu_color": "#2c4a2a"
+  },
+  {
+   "name": "Scorched Dunes",
+   "accent": "#ffcf6a",
+   "menu_color": "#4a3420"
+  },
+  {
+   "name": "Frostpeak",
+   "accent": "#a8e8ff",
+   "menu_color": "#22344a"
+  },
+  {
+   "name": "Neon Foundry",
+   "accent": "#ff5ad8",
+   "menu_color": "#1a1424"
+  },
+  {
+   "name": "Void Rift",
+   "accent": "#c89bff",
+   "menu_color": "#120a1e"
+  }
+ ],
+ "levels": [
+  {
+   "id": "level_01",
+   "name": "First Steps",
+   "number": 1,
+   "world": 1
+  },
+  {
+   "id": "level_02",
+   "name": "Quick Feet",
+   "number": 2,
+   "world": 1
+  },
+  {
+   "id": "level_03",
+   "name": "Winding Brook",
+   "number": 3,
+   "world": 1
+  },
+  {
+   "id": "level_04",
+   "name": "Swarm Meadow",
+   "number": 4,
+   "world": 1
+  },
+  {
+   "id": "level_05",
+   "name": "Beetle Hollow",
+   "number": 5,
+   "world": 1
+  },
+  {
+   "id": "level_06",
+   "name": "Twin Trails",
+   "number": 6,
+   "world": 1
+  },
+  {
+   "id": "level_07",
+   "name": "Wings Over Vale",
+   "number": 7,
+   "world": 1
+  },
+  {
+   "id": "level_08",
+   "name": "Two Gates",
+   "number": 8,
+   "world": 1
+  },
+  {
+   "id": "level_09",
+   "name": "Crossroads",
+   "number": 9,
+   "world": 1
+  },
+  {
+   "id": "level_10",
+   "name": "Thornback's Lair",
+   "number": 10,
+   "world": 1
+  },
+  {
+   "id": "level_11",
+   "name": "Long Caravan",
+   "number": 11,
+   "world": 2
+  },
+  {
+   "id": "level_12",
+   "name": "Ember Road",
+   "number": 12,
+   "world": 2
+  },
+  {
+   "id": "level_13",
+   "name": "Mirage Fork",
+   "number": 13,
+   "world": 2
+  },
+  {
+   "id": "level_14",
+   "name": "Oasis Gate",
+   "number": 14,
+   "world": 2
+  },
+  {
+   "id": "level_15",
+   "name": "Sandwyrm Pit",
+   "number": 15,
+   "world": 2
+  },
+  {
+   "id": "level_16",
+   "name": "Sky Raiders",
+   "number": 16,
+   "world": 2
+  },
+  {
+   "id": "level_17",
+   "name": "Split Dunes",
+   "number": 17,
+   "world": 2
+  },
+  {
+   "id": "level_18",
+   "name": "Narrow Pass",
+   "number": 18,
+   "world": 2
+  },
+  {
+   "id": "level_19",
+   "name": "Temple Steps",
+   "number": 19,
+   "world": 2
+  },
+  {
+   "id": "level_20",
+   "name": "Colossus Court",
+   "number": 20,
+   "world": 2
+  },
+  {
+   "id": "level_21",
+   "name": "Thin Ice",
+   "number": 21,
+   "world": 3
+  },
+  {
+   "id": "level_22",
+   "name": "Cold Fork",
+   "number": 22,
+   "world": 3
+  },
+  {
+   "id": "level_23",
+   "name": "Glacier Cross",
+   "number": 23,
+   "world": 3
+  },
+  {
+   "id": "level_24",
+   "name": "Whiteout",
+   "number": 24,
+   "world": 3
+  },
+  {
+   "id": "level_25",
+   "name": "Wraith Hollow",
+   "number": 25,
+   "world": 3
+  },
+  {
+   "id": "level_26",
+   "name": "Three Rivers",
+   "number": 26,
+   "world": 3
+  },
+  {
+   "id": "level_27",
+   "name": "Iron Skies",
+   "number": 27,
+   "world": 3
+  },
+  {
+   "id": "level_28",
+   "name": "Frozen Cross",
+   "number": 28,
+   "world": 3
+  },
+  {
+   "id": "level_29",
+   "name": "Avalanche",
+   "number": 29,
+   "world": 3
+  },
+  {
+   "id": "level_30",
+   "name": "Titan's Throne",
+   "number": 30,
+   "world": 3
+  },
+  {
+   "id": "level_31",
+   "name": "Power Up",
+   "number": 31,
+   "world": 4
+  },
+  {
+   "id": "level_32",
+   "name": "Assembly Line",
+   "number": 32,
+   "world": 4
+  },
+  {
+   "id": "level_33",
+   "name": "Deep Shaft",
+   "number": 33,
+   "world": 4
+  },
+  {
+   "id": "level_34",
+   "name": "Node Wars",
+   "number": 34,
+   "world": 4
+  },
+  {
+   "id": "level_35",
+   "name": "Overclock",
+   "number": 35,
+   "world": 4
+  },
+  {
+   "id": "level_36",
+   "name": "Parallel Lines",
+   "number": 36,
+   "world": 4
+  },
+  {
+   "id": "level_37",
+   "name": "Gunship Bay",
+   "number": 37,
+   "world": 4
+  },
+  {
+   "id": "level_38",
+   "name": "Warden Hall",
+   "number": 38,
+   "world": 4
+  },
+  {
+   "id": "level_39",
+   "name": "Short Circuit",
+   "number": 39,
+   "world": 4
+  },
+  {
+   "id": "level_40",
+   "name": "The Dreadnought",
+   "number": 40,
+   "world": 4
+  },
+  {
+   "id": "level_41",
+   "name": "Rift Walk",
+   "number": 41,
+   "world": 5
+  },
+  {
+   "id": "level_42",
+   "name": "Loop Back",
+   "number": 42,
+   "world": 5
+  },
+  {
+   "id": "level_43",
+   "name": "Phantom Choir",
+   "number": 43,
+   "world": 5
+  },
+  {
+   "id": "level_44",
+   "name": "Storm of Wings",
+   "number": 44,
+   "world": 5
+  },
+  {
+   "id": "level_45",
+   "name": "Stalker's Edge",
+   "number": 45,
+   "world": 5
+  },
+  {
+   "id": "level_46",
+   "name": "Escort Duty",
+   "number": 46,
+   "world": 5
+  },
+  {
+   "id": "level_47",
+   "name": "Four Gates",
+   "number": 47,
+   "world": 5
+  },
+  {
+   "id": "level_48",
+   "name": "Last Pads",
+   "number": 48,
+   "world": 5
+  },
+  {
+   "id": "level_49",
+   "name": "The Gauntlet",
+   "number": 49,
+   "world": 5
+  },
+  {
+   "id": "level_50",
+   "name": "The Void Sovereign",
+   "number": 50,
+   "world": 5
+  }
+ ]
+}

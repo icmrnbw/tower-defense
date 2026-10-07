@@ -110,6 +110,9 @@ func _build_top_bar() -> void:
 	lives_label = Label.new()
 	lives_label.add_theme_color_override("font_color", Color(1.0, 0.45, 0.45))
 	wave_label = Label.new()
+	var menu_button := _button("Map", func(): game.go_to_menu(), 64)
+	menu_button.custom_minimum_size.y = 48
+	row.add_child(menu_button)
 	for l in [gold_label, lives_label, wave_label]:
 		l.add_theme_font_size_override("font_size", 24)
 		l.custom_minimum_size.x = 120
@@ -174,7 +177,7 @@ func _update_wave_button() -> void:
 func refresh() -> void:
 	gold_label.text = "Gold %d" % game.gold
 	lives_label.text = "Lives %d" % game.lives
-	wave_label.text = "Wave %d/%d" % [maxi(game.wave_index + 1, 0), game.level["waves"].size()]
+	wave_label.text = "%d. %s   Wave %d/%d" % [game.level_number, game.level.get("name", ""), maxi(game.wave_index + 1, 0), game.wave_count()]
 	var pad: int = game.selected_pad
 	var t: Tower = game.tower_at(pad)
 	var key := "" if pad < 0 else "%d:%s:%s" % [pad, t.state if t else "-", t.target_mode if t else ""]
@@ -203,13 +206,16 @@ func _rebuild_menus(pad: int, t: Tower) -> void:
 	if pad < 0:
 		return
 	if t == null:
-		var row := HBoxContainer.new()
-		build_menu.add_child(row)
-		for id in Data.towers:
+		var grid := GridContainer.new()
+		grid.columns = 5
+		build_menu.add_child(grid)
+		for id in game.available_towers:
 			var cost := int(Data.towers[id]["states"]["1"]["cost"])
-			var b := _button("%s\n%dg" % [Data.towers[id]["name"], cost], func(): game.build(pad, id), 130)
-			b.custom_minimum_size.y = 76
-			row.add_child(b)
+			var b := _button("%s\n%dg" % [Data.towers[id]["name"], cost], func(): game.build(pad, id), 124)
+			b.custom_minimum_size.y = 68
+			b.add_theme_font_size_override("font_size", 17)
+			b.add_theme_color_override("font_color", Color(Data.towers[id]["color"]).lightened(0.3))
+			grid.add_child(b)
 			_cost_buttons.append([b, cost])
 		_place(build_menu, pad)
 	else:
@@ -255,12 +261,33 @@ func _rebuild_menus(pad: int, t: Tower) -> void:
 
 
 func _stat_line(t: Tower) -> String:
-	var parts := ["DMG %d" % int(t.stat("damage")), "RATE %.1f/s" % float(t.stat("rate")), "RANGE %d" % int(t.range_px())]
+	var parts := []
+	match t.kind():
+		"aura":
+			parts.append("BUFF +%d%% DMG" % int((float(t.stat("damage_mult", 1.0)) - 1.0) * 100))
+			if t.stat("rate_mult", 0.0) > 0.0:
+				parts.append("+%d%% RATE" % int((float(t.stat("rate_mult")) - 1.0) * 100))
+			if t.stat("gold_mult", 0.0) > 0.0:
+				parts.append("x%.1f GOLD" % float(t.stat("gold_mult")))
+			parts.append("REVEALS STEALTH")
+		"beam":
+			parts.append("DPS %d-%d" % [int(t.stat("dps_min")), int(t.stat("dps_max"))])
+		_:
+			parts.append("DMG %d" % int(t.damage()))
+			parts.append("RATE %.1f/s" % t.rate())
+	parts.append("RANGE %d" % int(t.range_px()))
 	if t.stat("splash", 0.0) > 0.0:
 		parts.append("SPLASH")
+	if t.stat("chains", 0.0) > 0.0:
+		parts.append("CHAINS %d" % int(t.stat("chains")))
 	if t.stat("slow", 0.0) > 0.0:
 		parts.append("SLOW %d%%" % int(float(t.stat("slow")) * 100))
-	parts.append("AIR" if t.hits_air() else "GROUND ONLY")
+	if t.stat("burn_dps", 0.0) > 0.0:
+		parts.append("BURN")
+	if t.stat("poison_dps", 0.0) > 0.0:
+		parts.append("POISON")
+	if t.kind() != "aura":
+		parts.append("AIR+GROUND" if t.hits_air() and t.hits_ground() else "AIR ONLY" if t.hits_air() else "GROUND ONLY")
 	return "  ".join(parts)
 
 
@@ -296,9 +323,17 @@ func show_end(victory: bool, stars: int) -> void:
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	col.add_child(title)
 	var sub := Label.new()
-	sub.text = ("Stars: %d / 3   Lives left: %d" % [stars, game.lives]) if victory else "Reached wave %d of %d" % [game.wave_index + 1, game.level["waves"].size()]
+	sub.text = ("%s   Lives left: %d" % ["*".repeat(stars) + "-".repeat(3 - stars), game.lives]) if victory else "Reached wave %d of %d" % [game.wave_index + 1, game.wave_count()]
+	sub.add_theme_font_size_override("font_size", 28)
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	col.add_child(sub)
-	col.add_child(_button("Play again", func(): game.restart(), 220))
+	var row := HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	col.add_child(row)
+	row.add_child(_button("Retry", func(): game.restart(), 150))
+	var next_id := Data.next_level_id(Data.current_level)
+	if victory and next_id != "":
+		row.add_child(_button("Next level", func(): game.go_to_level(next_id), 180))
+	row.add_child(_button("Map", func(): game.go_to_menu(), 130))
 	end_panel.reset_size()
 	end_panel.position = (root.get_viewport_rect().size - end_panel.size) * 0.5

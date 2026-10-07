@@ -1,44 +1,33 @@
 {
   "bolt": {
-    "name": "Bolt Turret",
-    "kind": "projectile",
-    "damage_type": "physical",
-    "hits_air": true,
-    "color": "#ffd21f",
-    "projectile_speed": 650,
+    "name": "Bolt Turret", "unlock": 1, "kind": "projectile", "damage_type": "physical",
+    "hits_air": true, "color": "#ffd21f", "projectile_speed": 650, "style": "bolt",
     "states": {
       "1":  {"label": "Bolt Turret", "cost": 100, "damage": 12, "rate": 1.8, "range": 150},
-      "2":  {"label": "Bolt Turret II", "cost": 75, "damage": 15, "rate": 1.8, "range": 155},
-      "3":  {"label": "Bolt Turret III", "cost": 100, "damage": 22, "rate": 2.0, "range": 170},
-      "4a": {"label": "Gatling", "branch": "Gatling", "desc": "Very fast fire", "cost": 160, "damage": 13, "rate": 6.0, "range": 170},
-      "5a": {"label": "Gatling Fortress", "cost": 250, "damage": 18, "rate": 8.5, "range": 190},
-      "4b": {"label": "Piercer", "branch": "Piercer", "desc": "Bolts pierce 4 enemies", "cost": 160, "damage": 48, "rate": 1.4, "range": 210, "pierce": 4, "projectile_speed": 950},
-      "5b": {"label": "Piercer Rail", "cost": 250, "damage": 80, "rate": 1.6, "range": 240, "pierce": 6, "projectile_speed": 1100}
+      "2":  {"label": "Bolt Turret II", "cost": 75, "damage": 17, "rate": 1.9, "range": 155},
+      "3":  {"label": "Bolt Turret III", "cost": 100, "damage": 25, "rate": 2.0, "range": 170},
+      "4a": {"label": "Gatling", "branch": "Gatling", "desc": "Very fast fire", "cost": 160, "damage": 15, "rate": 6.0, "range": 170},
+      "5a": {"label": "Gatling Fortress", "cost": 250, "damage": 22, "rate": 8.5, "range": 190},
+      "4b": {"label": "Piercer", "branch": "Piercer", "desc": "Bolts pierce 4 enemies", "cost": 160, "damage": 55, "rate": 1.4, "range": 210, "pierce": 4, "projectile_speed": 950},
+      "5b": {"label": "Piercer Rail", "cost": 250, "damage": 90, "rate": 1.6, "range": 240, "pierce": 6, "projectile_speed": 1100}
     }
   },
   "cannon": {
-    "name": "Cannon",
-    "kind": "projectile",
-    "damage_type": "physical",
-    "hits_air": false,
-    "color": "#ff7a1f",
-    "projectile_speed": 380,
+    "name": "Cannon", "unlock": 1, "kind": "projectile", "damage_type": "physical",
+    "hits_air": false, "color": "#ff7a1f", "projectile_speed": 380, "style": "shell",
     "states": {
       "1":  {"label": "Cannon", "cost": 150, "damage": 24, "rate": 0.6, "range": 170, "min_range": 50, "splash": 55},
       "2":  {"label": "Cannon II", "cost": 112, "damage": 36, "rate": 0.65, "range": 175, "min_range": 50, "splash": 60},
       "3":  {"label": "Cannon III", "cost": 150, "damage": 54, "rate": 0.7, "range": 185, "min_range": 50, "splash": 65},
-      "4a": {"label": "Cluster Bombard", "branch": "Cluster", "desc": "Shells split into bomblets", "cost": 240, "damage": 50, "rate": 0.7, "range": 185, "min_range": 50, "splash": 60, "bomblets": 5, "bomblet_damage": 22, "bomblet_splash": 40},
-      "5a": {"label": "Cluster Artillery", "cost": 375, "damage": 75, "rate": 0.75, "range": 195, "min_range": 50, "splash": 65, "bomblets": 7, "bomblet_damage": 32, "bomblet_splash": 44},
-      "4b": {"label": "Siege Howitzer", "branch": "Howitzer", "desc": "Huge range, stuns", "cost": 240, "damage": 140, "rate": 0.4, "range": 300, "min_range": 80, "splash": 80, "stun": 0.5, "projectile_speed": 300},
-      "5b": {"label": "Grand Howitzer", "cost": 375, "damage": 220, "rate": 0.45, "range": 340, "min_range": 80, "splash": 95, "stun": 0.7, "projectile_speed": 320}
+      "4a": {"label": "Cluster Bombard", "branch": "Cluster", "desc": "Shells split into bomblets", "cost": 240, "damage": 55, "rate": 0.7, "range": 185, "min_range": 50, "splash": 60, "bomblets": 5, "bomblet_damage": 24, "bomblet_splash": 40},
+      "5a": {"label": "Cluster Artillery", "cost": 375, "damage": 80, "rate": 0.75, "range": 195, "min_range": 50, "splash": 65, "bomblets": 7, "bomblet_damage": 34, "bomblet_splash": 44},
+      "4b": {"label": "Siege Howitzer", "branch": "Howitzer", "desc": "Huge range, stuns", "cost": 240, "damage": 150, "rate": 0.4, "range": 300, "min_range": 80, "splash": 80, "stun": 0.5, "projectile_speed": 300},
+      "5b": {"label": "Grand Howitzer", "cost": 375, "damage": 240, "rate": 0.45, "range": 340, "min_range": 80, "splash": 95, "stun": 0.7, "projectile_speed": 320}
     }
   },
   "frost": {
-    "name": "Frost Spire",
-    "kind": "pulse",
-    "damage_type": "frost",
-    "hits_air": false,
-    "color": "#5fe3ff",
+    "name": "Frost Spire", "unlock": 3, "kind": "pulse", "damage_type": "frost",
+    "hits_air": false, "color": "#5fe3ff",
     "states": {
       "1":  {"label": "Frost Spire", "cost": 130, "damage": 3, "rate": 0.8, "range": 110, "slow": 0.35, "slow_duration": 1.5},
       "2":  {"label": "Frost Spire II", "cost": 98, "damage": 5, "rate": 0.85, "range": 115, "slow": 0.42, "slow_duration": 1.6},
@@ -47,6 +36,97 @@
       "5a": {"label": "Glacier Heart Prime", "cost": 325, "damage": 14, "rate": 1.0, "range": 135, "slow": 0.55, "slow_duration": 2.0, "freeze_chance": 0.4, "freeze_duration": 1.5, "shatter": 0.4},
       "4b": {"label": "Blizzard Engine", "branch": "Blizzard", "desc": "Huge radius, slows air", "cost": 208, "damage": 8, "rate": 0.9, "range": 170, "slow": 0.55, "slow_duration": 2.0, "hits_air": true},
       "5b": {"label": "Blizzard Engine Prime", "cost": 325, "damage": 12, "rate": 1.0, "range": 200, "slow": 0.6, "slow_duration": 2.2, "hits_air": true}
+    }
+  },
+  "tesla": {
+    "name": "Tesla Coil", "unlock": 6, "kind": "chain", "damage_type": "energy",
+    "hits_air": true, "color": "#8f7bff", "chain_range": 90, "chain_falloff": 0.82,
+    "states": {
+      "1":  {"label": "Tesla Coil", "cost": 180, "damage": 20, "rate": 0.9, "range": 140, "chains": 2},
+      "2":  {"label": "Tesla Coil II", "cost": 135, "damage": 29, "rate": 0.95, "range": 145, "chains": 3},
+      "3":  {"label": "Tesla Coil III", "cost": 180, "damage": 40, "rate": 1.0, "range": 155, "chains": 3},
+      "4a": {"label": "Storm Conductor", "branch": "Storm", "desc": "Lightning jumps to 8 enemies", "cost": 288, "damage": 44, "rate": 1.1, "range": 165, "chains": 7},
+      "5a": {"label": "Storm Conductor Prime", "cost": 450, "damage": 62, "rate": 1.2, "range": 175, "chains": 9},
+      "4b": {"label": "Overload", "branch": "Overload", "desc": "Huge zap, breaks shields", "cost": 288, "damage": 150, "rate": 0.45, "range": 160, "chains": 1, "shield_break": true},
+      "5b": {"label": "Overload Reactor", "cost": 450, "damage": 240, "rate": 0.5, "range": 175, "chains": 2, "shield_break": true, "stun": 0.4}
+    }
+  },
+  "railgun": {
+    "name": "Railgun", "unlock": 9, "kind": "projectile", "damage_type": "physical",
+    "hits_air": true, "color": "#ff3b4e", "projectile_speed": 2200, "style": "rail", "armor_pierce": 1.0,
+    "states": {
+      "1":  {"label": "Railgun", "cost": 220, "damage": 55, "rate": 0.5, "range": 280},
+      "2":  {"label": "Railgun II", "cost": 165, "damage": 80, "rate": 0.52, "range": 300},
+      "3":  {"label": "Railgun III", "cost": 220, "damage": 115, "rate": 0.55, "range": 320},
+      "4a": {"label": "Deadeye", "branch": "Deadeye", "desc": "Crits, reveals stealth", "cost": 352, "damage": 130, "rate": 0.6, "range": 350, "crit_chance": 0.3, "crit_mult": 3.0, "reveals": true},
+      "5a": {"label": "Deadeye Prime", "cost": 550, "damage": 190, "rate": 0.65, "range": 380, "crit_chance": 0.35, "crit_mult": 3.5, "reveals": true},
+      "4b": {"label": "Executioner", "branch": "Executioner", "desc": "Kills weakened foes, hurts bosses", "cost": 352, "damage": 160, "rate": 0.5, "range": 330, "execute": 0.15, "boss_pct": 0.03},
+      "5b": {"label": "Executioner Prime", "cost": 550, "damage": 240, "rate": 0.55, "range": 360, "execute": 0.2, "boss_pct": 0.05}
+    }
+  },
+  "inferno": {
+    "name": "Inferno", "unlock": 12, "kind": "cone", "damage_type": "fire",
+    "hits_air": false, "color": "#ff5a1f", "cone": 0.6,
+    "states": {
+      "1":  {"label": "Inferno", "cost": 170, "damage": 3, "rate": 4.0, "range": 105, "burn_dps": 6, "burn_duration": 2.0},
+      "2":  {"label": "Inferno II", "cost": 128, "damage": 4.5, "rate": 4.0, "range": 110, "burn_dps": 9, "burn_duration": 2.0},
+      "3":  {"label": "Inferno III", "cost": 170, "damage": 6.5, "rate": 4.0, "range": 115, "burn_dps": 13, "burn_duration": 2.0},
+      "4a": {"label": "Dragon Maw", "branch": "Dragon", "desc": "Long cone, fire spreads on death", "cost": 272, "damage": 8, "rate": 4.0, "range": 150, "cone": 0.5, "burn_dps": 18, "burn_duration": 2.5, "spread": true},
+      "5a": {"label": "Dragon Maw Prime", "cost": 425, "damage": 12, "rate": 4.0, "range": 165, "cone": 0.5, "burn_dps": 26, "burn_duration": 2.5, "spread": true},
+      "4b": {"label": "Magma Forge", "branch": "Magma", "desc": "Leaves lava pools on the path", "cost": 272, "damage": 7, "rate": 4.0, "range": 120, "burn_dps": 15, "burn_duration": 2.0, "pool_dps": 25, "pool_duration": 3.0, "pool_interval": 1.5},
+      "5b": {"label": "Magma Forge Prime", "cost": 425, "damage": 10, "rate": 4.0, "range": 130, "burn_dps": 20, "burn_duration": 2.0, "pool_dps": 40, "pool_duration": 3.5, "pool_interval": 1.2}
+    }
+  },
+  "skyhunter": {
+    "name": "Skyhunter", "unlock": 15, "kind": "projectile", "damage_type": "physical",
+    "hits_air": true, "hits_ground": false, "color": "#e8463a", "projectile_speed": 420, "style": "missile",
+    "states": {
+      "1":  {"label": "Skyhunter", "cost": 200, "damage": 30, "rate": 0.9, "range": 220, "volley": 2, "splash": 30},
+      "2":  {"label": "Skyhunter II", "cost": 150, "damage": 42, "rate": 0.9, "range": 230, "volley": 2, "splash": 30},
+      "3":  {"label": "Skyhunter III", "cost": 200, "damage": 58, "rate": 0.95, "range": 245, "volley": 3, "splash": 32},
+      "4a": {"label": "Swarm Battery", "branch": "Swarm", "desc": "8 missiles per volley", "cost": 320, "damage": 32, "rate": 1.0, "range": 250, "volley": 8, "splash": 26},
+      "5a": {"label": "Swarm Battery Prime", "cost": 500, "damage": 44, "rate": 1.0, "range": 265, "volley": 10, "splash": 28},
+      "4b": {"label": "Thunderhead", "branch": "Thunderhead", "desc": "Huge missile, hits ground too", "cost": 320, "damage": 220, "rate": 0.5, "range": 260, "volley": 1, "splash": 90, "hits_ground": true},
+      "5b": {"label": "Thunderhead Prime", "cost": 500, "damage": 340, "rate": 0.5, "range": 280, "volley": 1, "splash": 110, "hits_ground": true}
+    }
+  },
+  "venom": {
+    "name": "Venom Spore", "unlock": 19, "kind": "projectile", "damage_type": "poison",
+    "hits_air": false, "color": "#7ddf3a", "projectile_speed": 340, "style": "glob", "poison_duration": 4.0, "max_stacks": 5,
+    "states": {
+      "1":  {"label": "Venom Spore", "cost": 160, "damage": 4, "rate": 0.8, "range": 150, "splash": 35, "poison_dps": 6, "shred": 0.1},
+      "2":  {"label": "Venom Spore II", "cost": 120, "damage": 6, "rate": 0.8, "range": 155, "splash": 38, "poison_dps": 9, "shred": 0.12},
+      "3":  {"label": "Venom Spore III", "cost": 160, "damage": 8, "rate": 0.85, "range": 165, "splash": 40, "poison_dps": 12, "shred": 0.15},
+      "4a": {"label": "Plague Garden", "branch": "Plague", "desc": "Poison spreads on death", "cost": 256, "damage": 10, "rate": 0.9, "range": 170, "splash": 45, "poison_dps": 16, "shred": 0.15, "spread": true},
+      "5a": {"label": "Plague Garden Prime", "cost": 400, "damage": 14, "rate": 0.95, "range": 180, "splash": 50, "poison_dps": 23, "shred": 0.18, "spread": true},
+      "4b": {"label": "Acid Geyser", "branch": "Acid", "desc": "Melts armor, acid puddles", "cost": 256, "damage": 10, "rate": 0.85, "range": 165, "splash": 45, "poison_dps": 12, "shred": 0.35, "pool_dps": 12, "pool_duration": 3.0, "pool_interval": 1.0},
+      "5b": {"label": "Acid Geyser Prime", "cost": 400, "damage": 14, "rate": 0.9, "range": 175, "splash": 50, "poison_dps": 16, "shred": 0.6, "pool_dps": 18, "pool_duration": 3.5, "pool_interval": 1.0}
+    }
+  },
+  "amplifier": {
+    "name": "Amplifier", "unlock": 23, "kind": "aura", "damage_type": "none",
+    "hits_air": true, "color": "#ffe27a", "reveals": true,
+    "states": {
+      "1":  {"label": "Amplifier", "cost": 250, "range": 140, "damage_mult": 1.15},
+      "2":  {"label": "Amplifier II", "cost": 188, "range": 150, "damage_mult": 1.2},
+      "3":  {"label": "Amplifier III", "cost": 250, "range": 160, "damage_mult": 1.25, "range_mult": 1.1},
+      "4a": {"label": "War Totem", "branch": "War Totem", "desc": "+25% fire rate, crits", "cost": 400, "range": 165, "damage_mult": 1.25, "range_mult": 1.1, "rate_mult": 1.25, "crit_chance": 0.1},
+      "5a": {"label": "War Totem Prime", "cost": 625, "range": 175, "damage_mult": 1.35, "range_mult": 1.15, "rate_mult": 1.35, "crit_chance": 0.15},
+      "4b": {"label": "Treasury Beacon", "branch": "Treasury", "desc": "+50% gold from kills nearby", "cost": 400, "range": 165, "damage_mult": 1.2, "range_mult": 1.1, "gold_mult": 1.5},
+      "5b": {"label": "Treasury Beacon Prime", "cost": 625, "range": 175, "damage_mult": 1.25, "range_mult": 1.1, "gold_mult": 2.0}
+    }
+  },
+  "prism": {
+    "name": "Prism Laser", "unlock": 31, "kind": "beam", "damage_type": "energy",
+    "hits_air": true, "color": "#f2f2ff",
+    "states": {
+      "1":  {"label": "Prism Laser", "cost": 300, "dps_min": 20, "dps_max": 160, "ramp": 3.0, "range": 200},
+      "2":  {"label": "Prism Laser II", "cost": 225, "dps_min": 30, "dps_max": 230, "ramp": 3.0, "range": 205},
+      "3":  {"label": "Prism Laser III", "cost": 300, "dps_min": 40, "dps_max": 320, "ramp": 3.0, "range": 215},
+      "4a": {"label": "Solar Lance", "branch": "Solar Lance", "desc": "Beam burns everything in a line", "cost": 480, "dps_min": 60, "dps_max": 340, "ramp": 2.5, "range": 230, "line": true},
+      "5a": {"label": "Solar Lance Prime", "cost": 750, "dps_min": 90, "dps_max": 500, "ramp": 2.5, "range": 250, "line": true},
+      "4b": {"label": "Singularity Focus", "branch": "Singularity", "desc": "Ramps faster, huge cap", "cost": 480, "dps_min": 50, "dps_max": 750, "ramp": 2.0, "range": 220},
+      "5b": {"label": "Singularity Focus Prime", "cost": 750, "dps_min": 70, "dps_max": 1250, "ramp": 1.5, "range": 235}
     }
   }
 }

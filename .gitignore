@@ -5,3 +5,4 @@ game/.godot/
 build/
 *.apk
 *.aab
+*.idsig
