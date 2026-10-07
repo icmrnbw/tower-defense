@@ -1,0 +1,7 @@
+# Godot
+game/.godot/
+*.tmp
+# Export output
+build/
+*.apk
+*.aab

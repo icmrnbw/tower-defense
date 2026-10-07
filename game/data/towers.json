@@ -1,0 +1,52 @@
+{
+  "bolt": {
+    "name": "Bolt Turret",
+    "kind": "projectile",
+    "damage_type": "physical",
+    "hits_air": true,
+    "color": "#ffd21f",
+    "projectile_speed": 650,
+    "states": {
+      "1":  {"label": "Bolt Turret", "cost": 100, "damage": 12, "rate": 1.8, "range": 150},
+      "2":  {"label": "Bolt Turret II", "cost": 75, "damage": 15, "rate": 1.8, "range": 155},
+      "3":  {"label": "Bolt Turret III", "cost": 100, "damage": 22, "rate": 2.0, "range": 170},
+      "4a": {"label": "Gatling", "branch": "Gatling", "desc": "Very fast fire", "cost": 160, "damage": 13, "rate": 6.0, "range": 170},
+      "5a": {"label": "Gatling Fortress", "cost": 250, "damage": 18, "rate": 8.5, "range": 190},
+      "4b": {"label": "Piercer", "branch": "Piercer", "desc": "Bolts pierce 4 enemies", "cost": 160, "damage": 48, "rate": 1.4, "range": 210, "pierce": 4, "projectile_speed": 950},
+      "5b": {"label": "Piercer Rail", "cost": 250, "damage": 80, "rate": 1.6, "range": 240, "pierce": 6, "projectile_speed": 1100}
+    }
+  },
+  "cannon": {
+    "name": "Cannon",
+    "kind": "projectile",
+    "damage_type": "physical",
+    "hits_air": false,
+    "color": "#ff7a1f",
+    "projectile_speed": 380,
+    "states": {
+      "1":  {"label": "Cannon", "cost": 150, "damage": 24, "rate": 0.6, "range": 170, "min_range": 50, "splash": 55},
+      "2":  {"label": "Cannon II", "cost": 112, "damage": 36, "rate": 0.65, "range": 175, "min_range": 50, "splash": 60},
+      "3":  {"label": "Cannon III", "cost": 150, "damage": 54, "rate": 0.7, "range": 185, "min_range": 50, "splash": 65},
+      "4a": {"label": "Cluster Bombard", "branch": "Cluster", "desc": "Shells split into bomblets", "cost": 240, "damage": 50, "rate": 0.7, "range": 185, "min_range": 50, "splash": 60, "bomblets": 5, "bomblet_damage": 22, "bomblet_splash": 40},
+      "5a": {"label": "Cluster Artillery", "cost": 375, "damage": 75, "rate": 0.75, "range": 195, "min_range": 50, "splash": 65, "bomblets": 7, "bomblet_damage": 32, "bomblet_splash": 44},
+      "4b": {"label": "Siege Howitzer", "branch": "Howitzer", "desc": "Huge range, stuns", "cost": 240, "damage": 140, "rate": 0.4, "range": 300, "min_range": 80, "splash": 80, "stun": 0.5, "projectile_speed": 300},
+      "5b": {"label": "Grand Howitzer", "cost": 375, "damage": 220, "rate": 0.45, "range": 340, "min_range": 80, "splash": 95, "stun": 0.7, "projectile_speed": 320}
+    }
+  },
+  "frost": {
+    "name": "Frost Spire",
+    "kind": "pulse",
+    "damage_type": "frost",
+    "hits_air": false,
+    "color": "#5fe3ff",
+    "states": {
+      "1":  {"label": "Frost Spire", "cost": 130, "damage": 3, "rate": 0.8, "range": 110, "slow": 0.35, "slow_duration": 1.5},
+      "2":  {"label": "Frost Spire II", "cost": 98, "damage": 5, "rate": 0.85, "range": 115, "slow": 0.42, "slow_duration": 1.6},
+      "3":  {"label": "Frost Spire III", "cost": 130, "damage": 8, "rate": 0.9, "range": 125, "slow": 0.5, "slow_duration": 1.8},
+      "4a": {"label": "Glacier Heart", "branch": "Glacier", "desc": "Freezes; frozen take +40%", "cost": 208, "damage": 10, "rate": 0.9, "range": 125, "slow": 0.5, "slow_duration": 1.8, "freeze_chance": 0.25, "freeze_duration": 1.2, "shatter": 0.4},
+      "5a": {"label": "Glacier Heart Prime", "cost": 325, "damage": 14, "rate": 1.0, "range": 135, "slow": 0.55, "slow_duration": 2.0, "freeze_chance": 0.4, "freeze_duration": 1.5, "shatter": 0.4},
+      "4b": {"label": "Blizzard Engine", "branch": "Blizzard", "desc": "Huge radius, slows air", "cost": 208, "damage": 8, "rate": 0.9, "range": 170, "slow": 0.55, "slow_duration": 2.0, "hits_air": true},
+      "5b": {"label": "Blizzard Engine Prime", "cost": 325, "damage": 12, "rate": 1.0, "range": 200, "slow": 0.6, "slow_duration": 2.2, "hits_air": true}
+    }
+  }
+}
