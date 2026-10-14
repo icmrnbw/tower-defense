@@ -7,3 +7,4 @@ build/
 *.aab
 *.idsig
 __pycache__/
+!apk/*.apk

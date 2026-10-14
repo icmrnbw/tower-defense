@@ -54,6 +54,10 @@ Note for Android export (step 4): JSON files are not resources, so the export pr
 ![World map](docs/screenshots/world_map.png)
 ![Neon Foundry](docs/screenshots/w4_neon_foundry_upgrade.png)
 
+## Download
+
+The latest debug build is [apk/bastion-lanes-debug.apk](apk/bastion-lanes-debug.apk). Uninstall any earlier build first (each build machine signs with a different debug key).
+
 ## Building the Android APK
 
 `game/export_presets.cfg` has an "Android" preset (arm64 + armv7, landscape, includes `*.json`). With Godot 4.4.1 export templates installed and the Android SDK/keystore set in Editor Settings:
