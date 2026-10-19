@@ -41,6 +41,7 @@ var disabled_color := Color.WHITE
 var fire_time := 0.0
 var pool_timer := 0.0
 var beam_target: Enemy
+var locked: Enemy  # aimed towers stay on one target until it dies or leaves range
 var beam_time := 0.0
 var beam_end := Vector2.ZERO
 var lightning: Array = []
@@ -130,6 +131,7 @@ func hits_ground() -> bool:
 
 func cycle_target_mode() -> void:
 	target_mode = TARGET_MODES[(TARGET_MODES.find(target_mode) + 1) % TARGET_MODES.size()]
+	locked = null
 
 
 func disable(duration: float, c: Color) -> void:
@@ -194,7 +196,8 @@ func _process(delta: float) -> void:
 		"pulse": _process_pulse()
 		"beam": _process_beam(delta)
 		_:
-			var target := _find_target()
+			var target := locked if is_instance_valid(locked) and _can_hit(locked) else _find_target()
+			locked = target
 			if target == null:
 				return
 			aim = lerp_angle(aim, (target.position - position).angle(), minf(1.0, delta * 14.0))
