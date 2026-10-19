@@ -31,6 +31,9 @@ func _init(game_ref: Node, strategy_name: String) -> void:
 		if arg.begins_with("--shots="):
 			shot_dir = arg.get_slice("=", 1)
 			shot_times = [25.0, 140.0, 141.0]
+	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--shot_times="):
+			shot_times = Array(arg.get_slice("=", 1).split(",")).map(func(v): return float(v))
 	for wave in game.level["waves"]:
 		for g in wave["groups"]:
 			var d: Dictionary = Data.enemies[g["enemy"]]

@@ -9,6 +9,7 @@ const TARGET_MODES := ["first", "last", "strong", "weak", "closest"]
 const SPRITE_SCALE := 0.22
 const DETECT_RADIUS := 85.0
 const SPRITE_PIVOT := Vector2(256, 372)
+const BOW_SCALE := 1.3  # bows are drawn larger than the sprite art so the draw reads at game zoom
 
 var tower_id := ""
 var def: Dictionary = {}
@@ -398,7 +399,8 @@ func muzzle() -> Vector2:
 	var s: float = parts["scale"]
 	var y := -230.0
 	if parts.has("bolt"):
-		y = float(parts["bolt"]["drawn"]) - float(parts["bolt"]["length"])
+		var bow_y := float(parts["bow"]["y"])
+		y = bow_y + (float(parts["bolt"]["drawn"]) - bow_y) * BOW_SCALE - float(parts["bolt"]["length"])
 	return position + _turret_xform() * (Vector2(0, y) * s * SPRITE_SCALE)
 
 
@@ -446,13 +448,15 @@ func _draw_bow(xf: Transform2D, s: float, half: float) -> void:
 	var nock_y := lerpf(rest_y, float(bolt["drawn"]), p)
 	if shot_age < 0.25:  # string thrums after release
 		nock_y -= sin(shot_age * 90.0) * 16.0 * exp(-shot_age * 18.0)
-	draw_set_transform_matrix(xf * Transform2D(0.0, Vector2.ONE * SPRITE_SCALE * s, 0.0, Vector2.ZERO))
+	# scaled up around the bow's own centre on the rail
+	draw_set_transform_matrix(xf * Transform2D(0.0, Vector2.ONE * SPRITE_SCALE * s, 0.0, Vector2.ZERO)
+			* Transform2D(0.0, Vector2.ONE * BOW_SCALE, 0.0, Vector2(0, y * (1.0 - BOW_SCALE))))
 	var nock := Vector2(0, nock_y)
 	for side in [-1.0, 1.0]:
 		var tip := Vector2(tip_x * side, tip_y)
-		draw_line(tip, nock, OUTLINE, 9.0)
+		draw_line(tip, nock, OUTLINE, 10.0)
 	for side in [-1.0, 1.0]:
-		draw_line(Vector2(tip_x * side, tip_y), nock, Color(0.95, 0.91, 0.8), 4.0)
+		draw_line(Vector2(tip_x * side, tip_y), nock, Color(0.97, 0.93, 0.82), 5.0)
 	if p > 0.5:  # taut string glints
 		draw_line(Vector2(-tip_x * 0.5, lerpf(tip_y, nock_y, 0.5)), nock, Color(1, 1, 1, (p - 0.5) * 1.2), 1.6)
 	for side in [-1.0, 1.0]:
@@ -480,7 +484,7 @@ func _draw_bow(xf: Transform2D, s: float, half: float) -> void:
 		# a fresh bolt drops onto the rail, then rides back with the string
 		var drop := clampf((shot_age - start) / 0.08, 0.0, 1.0)
 		draw_set_transform_matrix(xf * Transform2D(0.0, Vector2.ONE * SPRITE_SCALE, 0.0, Vector2.ZERO))
-		draw_texture(parts["bolt_tex"], Vector2(-half, -half + nock_y * s), Color(1, 1, 1, drop))
+		draw_texture(parts["bolt_tex"], Vector2(-half, -half + (y + (nock_y - y) * BOW_SCALE) * s), Color(1, 1, 1, drop))
 
 
 func _draw_flames(accent: Color) -> void:

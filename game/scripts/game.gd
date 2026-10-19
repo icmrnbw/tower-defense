@@ -97,6 +97,7 @@ func _ready() -> void:
 	ground_layer.draw.connect(_draw_ground_fx)
 	tower_layer = _layer("Towers")
 	enemy_layer = _layer("Enemies")
+	enemy_layer.y_sort_enabled = true
 	projectile_layer = _layer("Projectiles")
 	fx_layer = _layer("Fx")
 	overlay = _layer("Overlay")
