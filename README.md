@@ -15,7 +15,8 @@ A 2D arcade tower defense game for Android / Google Play, built with **Godot 4.4
 - **13 enemies:** armored, shielded, flying, healers, splitters, regenerators, stealth, burrowers and elite Wardens.
 - **10 bosses** on every level ending in 5 or 0, each testing a different tactic (hardening shell, armor shedding, burrowing, summoning, tower freezing, splitting titan, EMP, flying carrier, lane teleporting, and a 3-phase final boss).
 - **Balance:** a heuristic bot plays every level headless and `tools/balance.py` tunes each level's enemy HP until the bot wins while losing some lives.
-- **Art:** towers use sprites from `art/` when available (Bolt so far, via `game/tools/sync_art.sh`), otherwise code-drawn placeholders.
+- **Art:** towers use sprites from `art/` when available (Bolt so far, via `game/tools/sync_art.sh`), otherwise code-drawn placeholders. The Bolt crossbow is split into parts: the turret turns to track its target and the bow string draws back and snaps on every shot.
+- **Monsters:** every enemy is a rigged, animated fantasy creature (goblins, wargs, imps, orcs, bats, hobgoblins, shamans, war wagons, trolls, wraiths, wyverns, rockworms, ogres, plus 10 bosses). Parts are generated as SVG by `art/src/monsters*.py` and packed into one atlas per monster; `scripts/monster_rig.gd` plays procedural walk, flap, hover, cast, hit-flash, status-tint and death animations. Review shots live in `qa/art-review/`.
 
 Not built yet (from the GDD): tower loadout limit, research tree, hero abilities, conveyor belts, Veteran and Endless modes.
 
@@ -32,6 +33,8 @@ Not built yet (from the GDD): tower loadout limit, research tree, hero abilities
 | `game/scripts/tower.gd`, `enemy.gd`, `projectile.gd`, `fx.gd` | Gameplay objects |
 | `game/scripts/hud.gd`, `menu.gd` | In-level UI and world map |
 | `game/scripts/bot.gd` | Headless test player |
+| `game/scripts/monster_rig.gd`, `monster_corpse.gd` | Monster rigs (atlas + json from `art/monsters`) and death animation |
+| `game/scenes/art_preview.tscn` | Art review scene: `-- --view=towers\|enemies\|states\|duel --shot=out.png` |
 
 ## Running
 
@@ -53,6 +56,14 @@ Note for Android export (step 4): JSON files are not resources, so the export pr
 
 ![World map](docs/screenshots/world_map.png)
 ![Neon Foundry](docs/screenshots/w4_neon_foundry_upgrade.png)
+
+Art review screenshots (needs a display, e.g. `xvfb-run`):
+
+```
+cd game && godot --rendering-driver opengl3 --resolution 1300x1000 res://scenes/art_preview.tscn -- --view=enemies --shot=/tmp/enemies.png
+```
+
+![Monsters](qa/art-review/monsters_sheet.png)
 
 ## Download
 

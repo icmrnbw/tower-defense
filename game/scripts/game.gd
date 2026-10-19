@@ -97,6 +97,7 @@ func _ready() -> void:
 	ground_layer.draw.connect(_draw_ground_fx)
 	tower_layer = _layer("Towers")
 	enemy_layer = _layer("Enemies")
+	enemy_layer.y_sort_enabled = true
 	projectile_layer = _layer("Projectiles")
 	fx_layer = _layer("Fx")
 	overlay = _layer("Overlay")
@@ -459,7 +460,7 @@ func spawn_projectile(tower: Tower, target: Enemy, volley_index: int, with_pool:
 		dir = dir.rotated((volley_index % 2 * 2 - 1) * (0.6 + 0.15 * volley_index))
 	p.direction = dir
 	p.travel_left = tower.range_px() * 1.4
-	p.position = tower.position + dir * 20.0 + Vector2(0, -10)
+	p.position = tower.muzzle()
 	projectile_layer.add_child(p)
 
 

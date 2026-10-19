@@ -61,6 +61,14 @@ var flash_time := 0.0
 var anim := 0.0
 
 var abilities: Array = []  # [{def, timer, done}]
+
+# art: a rigged monster (art/monsters) when one exists, else the old vector blob
+var rig: MonsterRig
+var walk_phase := 0.0
+var flip := 1.0
+var spawn_time := 0.0
+var cast_time := 0.0
+var hit_time := 0.0
 var last_hit_gold_mult := 1.0
 
 
@@ -96,6 +104,8 @@ func setup(game_ref: Node, id: String, mult: float, path_curve: Curve2D, index: 
 	progress = start_progress
 	position = curve.sample_baked(progress)
 	z_index = 2 if flying else 0
+	rig = MonsterRig.get_rig(String(def.get("art", id)))
+	walk_phase = randf() * TAU
 	add_to_group("enemies")
 
 
@@ -136,6 +146,9 @@ func _process(delta: float) -> void:
 	if not alive:
 		return
 	flash_time = maxf(flash_time - delta, 0.0)
+	spawn_time += delta
+	cast_time = maxf(cast_time - delta, 0.0)
+	hit_time = maxf(hit_time - delta, 0.0)
 	freeze_time = maxf(freeze_time - delta, 0.0)
 	stun_time = maxf(stun_time - delta, 0.0)
 	revealed_time = maxf(revealed_time - delta, 0.0)
@@ -167,6 +180,11 @@ func _process(delta: float) -> void:
 	var ahead := curve.sample_baked(minf(progress + 6.0, path_length))
 	if ahead.distance_squared_to(p) > 0.01:
 		facing = (ahead - p).angle()
+		var dx := (ahead - p).normalized().x
+		if absf(dx) > 0.25:
+			flip = signf(dx)
+	if rig:
+		walk_phase += v * delta / maxf(float(rig.motion.get("stride", 40.0)) * rig.unit_scale(radius), 1.0) * TAU
 	position = p
 	queue_redraw()
 
@@ -225,6 +243,7 @@ func _update_abilities(delta: float) -> void:
 		if a["timer"] > 0.0:
 			continue
 		a["timer"] = float(d.get("interval", 1.0))
+		cast_time = 0.6
 		match kind:
 			"harden":
 				harden_time = float(d["duration"])
@@ -341,6 +360,7 @@ func take_damage(amount: float, damage_type: String, opts: Dictionary = {}) -> f
 		dmg *= 1.0 - effective_armor() * (1.0 - float(opts.get("armor_pierce", 0.0)))
 	hp -= dmg
 	flash_time = 0.06
+	hit_time = 0.12
 	if stealth:
 		reveal(1.5)  # area hits briefly expose stealthed enemies
 	last_hit_gold_mult = maxf(float(opts.get("gold_mult", 1.0)), 1.0)
@@ -364,6 +384,10 @@ func _die() -> void:
 					e.apply_burn(burn_dps, 2.0, false)
 				if poison_spreads:
 					e.apply_poison(poison_dps, 3.0, 5, false)
+	if rig and get_parent():
+		var corpse := MonsterCorpse.new()
+		corpse.setup(self)
+		get_parent().add_child(corpse)
 	died.emit(self)
 	queue_free()
 
@@ -371,6 +395,105 @@ func _die() -> void:
 # ---------------------------------------------------------------- drawing
 
 func _draw() -> void:
+	if rig and burrowed_time <= 0.0:
+		_draw_rig()
+	else:
+		_draw_blob()
+	_draw_status()
+
+
+## Where the rig's feet go, relative to the path point.
+func feet() -> Vector2:
+	return Vector2(0, radius * (1.6 if flying else 0.85))
+
+
+func rig_scale() -> float:
+	var sc := rig.unit_scale(radius)
+	var pop := clampf(spawn_time / 0.25, 0.0, 1.0)
+	return sc * (0.4 + 0.6 * pop + 0.12 * sin(pop * PI))
+
+
+func status_overlay() -> Color:
+	if flash_time > 0.0:
+		return Color(1, 1, 1, 0.85)
+	if freeze_time > 0.0:
+		return Color(0.65, 0.92, 1.0, 0.65)
+	if harden_time > 0.0:
+		return Color(1.0, 0.85, 0.25, 0.35 + 0.15 * sin(anim * 8.0))
+	if burn_time > 0.0:
+		return Color(1.0, 0.45, 0.1, 0.25 + 0.12 * sin(anim * 20.0))
+	if poison_time > 0.0:
+		return Color(0.5, 1.0, 0.2, 0.35)
+	if slow_amount > 0.0:
+		return Color(0.45, 0.75, 1.0, 0.3)
+	return Color(1, 1, 1, 0)
+
+
+func _draw_rig() -> void:
+	var alpha := 0.3 if stealth and revealed_time <= 0.0 else 1.0
+	var sc := rig_scale()
+	var squash := Vector2(1.0 + hit_time * 1.2, 1.0 - hit_time * 1.0)
+	var lift := Vector2.ZERO
+	if flying:
+		draw_set_transform(Vector2(2, radius + 4), 0.0, Vector2(1.0, 0.35))
+		draw_circle(Vector2.ZERO, radius * 0.9, Color(0, 0, 0, 0.22 * alpha))
+		draw_set_transform(Vector2.ZERO, 0.0)
+	var base := Transform2D(0.0, Vector2(flip * squash.x, squash.y) * sc, 0.0, feet() + lift)
+	if is_boss:
+		var pulse := 0.5 + 0.5 * sin(anim * 3.0)
+		draw_set_transform(feet(), 0.0, Vector2(1.0, 0.4))
+		draw_circle(Vector2.ZERO, radius * 1.5, Color(color, 0.12 + 0.08 * pulse))
+		draw_arc(Vector2.ZERO, radius * 1.5, 0, TAU, 32, Color(color, 0.45 * alpha), 3.0)
+		draw_set_transform(Vector2.ZERO, 0.0)
+	rig.draw(self, base, walk_phase, anim, clampf(cast_time / 0.25, 0.0, 1.0), Color(1, 1, 1, alpha), status_overlay())
+
+
+## Top of the monster's head, for bars and effects.
+func top_y() -> float:
+	if rig and burrowed_time <= 0.0:
+		return feet().y - rig.height * rig.unit_scale(radius)
+	return -radius
+
+
+func _draw_status() -> void:
+	var alpha := 0.3 if stealth and revealed_time <= 0.0 else 1.0
+	var mid := Vector2(0, (feet().y + top_y()) * 0.5) if rig else Vector2.ZERO
+	var half := maxf((feet().y - top_y()) * 0.55, radius + 4.0) if rig else radius + 5.0
+	if burrowed_time > 0.0:
+		mid = Vector2.ZERO
+		half = radius + 5.0
+	if shield > 0.0:
+		draw_set_transform(mid, 0.0, Vector2(maxf(radius * 1.3, half * 0.85) / half, 1.0))
+		draw_circle(Vector2.ZERO, half, Color(0.45, 0.7, 1.0, 0.12 * alpha))
+		draw_arc(Vector2.ZERO, half, 0.0, TAU, 32, Color(0.55, 0.8, 1.0, 0.8 * alpha), 2.5)
+		draw_arc(Vector2.ZERO, half - 3.0, -2.4, -1.6, 8, Color(1, 1, 1, 0.6 * alpha), 2.0)
+		draw_set_transform(Vector2.ZERO, 0.0)
+	if burn_time > 0.0:
+		for i in 4:
+			var fp := mid + Vector2(sin(anim * 9.0 + i * 2.1) * radius * 0.6, half * 0.3 - fmod(anim * 40.0 + i * 9.0, half * 1.2))
+			draw_circle(fp, 3.0, Color(1.0, 0.55, 0.1, 0.9))
+			draw_circle(fp, 1.5, Color(1.0, 0.9, 0.4, 0.9))
+	if poison_time > 0.0:
+		for i in 3:
+			var bp := mid + Vector2(sin(anim * 3.0 + i * 2.0) * radius * 0.7, half * 0.2 - fmod(anim * 18.0 + i * 11.0, half))
+			draw_circle(bp, 2.2, Color(0.55, 1.0, 0.25, 0.8))
+	if regen > 0.0 and hp < max_hp and burn_time <= 0.0 and poison_time <= 0.0:
+		for i in 2:
+			var rp := mid + Vector2(cos(anim * 2.0 + i * PI) * radius, -fmod(anim * 14.0 + i * 13.0, half * 1.4) + half * 0.5)
+			draw_circle(rp, 2.0, Color(0.4, 1.0, 0.7, 0.75))
+	if hp < max_hp or (max_shield > 0.0 and shield < max_shield):
+		var w2 := radius * 2.0 + 8.0
+		var top := Vector2(-w2 * 0.5, top_y() - 8.0)
+		draw_rect(Rect2(top - Vector2(1, 1), Vector2(w2 + 2, 6)), OUTLINE)
+		var r := clampf(hp_ratio(), 0.0, 1.0)
+		var c := Color(0.35, 0.9, 0.3) if r > 0.5 else Color(1.0, 0.75, 0.2) if r > 0.25 else Color(1.0, 0.3, 0.25)
+		draw_rect(Rect2(top, Vector2(w2 * r, 4)), c)
+		if max_shield > 0.0 and shield > 0.0:
+			draw_rect(Rect2(top + Vector2(0, -4), Vector2(w2 * clampf(shield / max_shield, 0.0, 1.0), 3)), Color(0.45, 0.7, 1.0))
+
+
+## Fallback look for enemies without monster art.
+func _draw_blob() -> void:
 	var body := color
 	if flash_time > 0.0:
 		body = Color.WHITE
@@ -429,20 +552,3 @@ func _draw() -> void:
 		draw_circle(Vector2(radius * 0.45, side * radius * 0.35), eye, Color(1, 1, 1, alpha))
 		draw_circle(Vector2(radius * 0.55, side * radius * 0.35), eye * 0.5, outline)
 	draw_set_transform(Vector2.ZERO, 0.0)
-
-	if shield > 0.0:
-		draw_arc(lift, radius + 5.0, 0.0, TAU, 32, Color(0.45, 0.7, 1.0, 0.85 * alpha), 3.0)
-	if burn_time > 0.0:
-		for i in 3:
-			var fp := lift + Vector2(sin(anim * 9.0 + i * 2.1) * radius * 0.6, -radius * 0.4 - fmod(anim * 30.0 + i * 7.0, radius))
-			draw_circle(fp, 3.0, Color(1.0, 0.55, 0.1, 0.9))
-
-	if hp < max_hp or (max_shield > 0.0 and shield < max_shield):
-		var w2 := radius * 2.0 + 8.0
-		var top := Vector2(-w2 * 0.5, -radius - 14.0 + lift.y)
-		draw_rect(Rect2(top - Vector2(1, 1), Vector2(w2 + 2, 6)), OUTLINE)
-		var r := clampf(hp_ratio(), 0.0, 1.0)
-		var c := Color(0.35, 0.9, 0.3) if r > 0.5 else Color(1.0, 0.75, 0.2) if r > 0.25 else Color(1.0, 0.3, 0.25)
-		draw_rect(Rect2(top, Vector2(w2 * r, 4)), c)
-		if max_shield > 0.0 and shield > 0.0:
-			draw_rect(Rect2(top + Vector2(0, -4), Vector2(w2 * clampf(shield / max_shield, 0.0, 1.0), 3)), Color(0.45, 0.7, 1.0))

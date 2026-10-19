@@ -110,6 +110,14 @@ func _draw() -> void:
 			draw_circle(Vector2.ZERO, 7.0, outline)
 			draw_circle(Vector2.ZERO, 5.5, color)
 			draw_circle(Vector2(-2, -2), 2.0, Color(0.9, 1.0, 0.7))
+		"bolt":
+			draw_line(Vector2(-22, 0), Vector2(-6, 0), Color(color, 0.25), 6.0)
+			draw_line(Vector2(-12, 0), Vector2(6, 0), outline, 3.5)
+			draw_line(Vector2(-11, 0), Vector2(5, 0), Color(0.62, 0.42, 0.22), 1.8)
+			draw_colored_polygon(PackedVector2Array([Vector2(11, 0), Vector2(4, -3.5), Vector2(4, 3.5)]), outline)
+			draw_colored_polygon(PackedVector2Array([Vector2(9.5, 0), Vector2(5, -2), Vector2(5, 2)]), Color(0.85, 0.88, 0.92))
+			for side in [-1.0, 1.0]:
+				draw_colored_polygon(PackedVector2Array([Vector2(-13, 0), Vector2(-9, side * 4.5), Vector2(-6, 0)]), color)
 		_:
 			draw_line(Vector2(-12, 0), Vector2(6, 0), Color(color, 0.35), 5.0)
 			draw_line(Vector2(-8, 0), Vector2(6, 0), outline, 4.0)

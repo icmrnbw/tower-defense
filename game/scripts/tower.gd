@@ -9,6 +9,7 @@ const TARGET_MODES := ["first", "last", "strong", "weak", "closest"]
 const SPRITE_SCALE := 0.22
 const DETECT_RADIUS := 85.0
 const SPRITE_PIVOT := Vector2(256, 372)
+const BOW_SCALE := 1.3  # bows are drawn larger than the sprite art so the draw reads at game zoom
 
 var tower_id := ""
 var def: Dictionary = {}
@@ -25,6 +26,8 @@ var anim := 0.0
 var recoil := 0.0
 var pulse_flash := 0.0
 var sprite: Texture2D
+var parts: Dictionary = {}  # animated sprite parts (art/towers/<id>/parts), empty if none
+var shot_age := 99.0
 
 # set by the game every frame
 var damage_mult := 1.0
@@ -38,6 +41,7 @@ var disabled_color := Color.WHITE
 var fire_time := 0.0
 var pool_timer := 0.0
 var beam_target: Enemy
+var locked: Enemy  # aimed towers stay on one target until it dies or leaves range
 var beam_time := 0.0
 var beam_end := Vector2.ZERO
 var lightning: Array = []
@@ -58,7 +62,24 @@ func _set_state(s: String) -> void:
 	stats = def["states"][s]
 	var path := "res://art/towers/%s/tower_%s_l%s.png" % [tower_id, tower_id, s]
 	sprite = load(path) if ResourceLoader.exists(path) else null
+	parts = _load_parts(s)
 	queue_redraw()
+
+
+## Base, turret and bolt sprites plus bow geometry, so the turret can turn and the bow can draw.
+func _load_parts(s: String) -> Dictionary:
+	var dir := "res://art/towers/%s/parts/" % tower_id
+	if not ResourceLoader.exists(dir + "l%s_turret.png" % s):
+		return {}
+	var meta: Dictionary = Data.load_json(dir + "parts.json")
+	var info: Dictionary = meta["states"]["l" + s].duplicate()
+	info["base"] = load(dir + "l%s_base.png" % s)
+	info["turret"] = load(dir + "l%s_turret.png" % s)
+	if ResourceLoader.exists(dir + "l%s_bolt.png" % s):
+		info["bolt_tex"] = load(dir + "l%s_bolt.png" % s)
+	info["half"] = float(meta["turret_size"]) * 0.5
+	info["pivot"] = Vector2(meta["pivot"][0], meta["pivot"][1])
+	return info
 
 
 func stat(key: String, fallback: Variant = 0.0) -> Variant:
@@ -110,6 +131,7 @@ func hits_ground() -> bool:
 
 func cycle_target_mode() -> void:
 	target_mode = TARGET_MODES[(TARGET_MODES.find(target_mode) + 1) % TARGET_MODES.size()]
+	locked = null
 
 
 func disable(duration: float, c: Color) -> void:
@@ -151,6 +173,7 @@ func make_hit(dmg: float) -> Dictionary:
 
 func _process(delta: float) -> void:
 	anim += delta
+	shot_age += delta
 	recoil = maxf(recoil - delta * 4.0, 0.0)
 	pulse_flash = maxf(pulse_flash - delta * 2.5, 0.0)
 	fire_time = maxf(fire_time - delta, 0.0)
@@ -173,7 +196,8 @@ func _process(delta: float) -> void:
 		"pulse": _process_pulse()
 		"beam": _process_beam(delta)
 		_:
-			var target := _find_target()
+			var target := locked if is_instance_valid(locked) and _can_hit(locked) else _find_target()
+			locked = target
 			if target == null:
 				return
 			aim = lerp_angle(aim, (target.position - position).angle(), minf(1.0, delta * 14.0))
@@ -242,6 +266,7 @@ func _fire_projectiles(target: Enemy) -> void:
 		var t: Enemy = targets[i % targets.size()]
 		game.spawn_projectile(self, t, i, spawn_pool and i == 0)
 	recoil = 1.0
+	shot_age = 0.0
 
 
 func _process_pulse() -> void:
@@ -341,7 +366,9 @@ func _draw() -> void:
 		draw_line(Vector2(0, -20), end, Color(beam_col, 0.35), w * 2.2)
 		draw_line(Vector2(0, -20), end, beam_col, w)
 		draw_line(Vector2(0, -20), end, Color.WHITE, w * 0.35)
-	if sprite:
+	if not parts.is_empty():
+		_draw_parts(accent)
+	elif sprite:
 		var size := Vector2(sprite.get_size()) * SPRITE_SCALE
 		draw_texture_rect(sprite, Rect2(-SPRITE_PIVOT * SPRITE_SCALE, size), false)
 		if recoil > 0.6:
@@ -358,6 +385,109 @@ func _draw() -> void:
 	if node_bonus > 1.0:
 		draw_arc(Vector2(0, 2), 33.0, 0.0, TAU, 32, Color(0.3, 1.0, 1.0, 0.6 + 0.3 * sin(anim * 4.0)), 2.0)
 	_draw_pips(level_number())
+
+
+# ---------------------------------------------------------------- animated sprite parts
+
+func _turret_xform() -> Transform2D:
+	var pivot: Vector2 = parts["pivot"]
+	var mount := (Vector2(parts["mount"][0], parts["mount"][1]) - pivot) * SPRITE_SCALE
+	return Transform2D(aim + PI / 2.0, mount)
+
+
+## Where shots leave the turret, in game coordinates.
+func muzzle() -> Vector2:
+	if parts.is_empty():
+		return position + Vector2.from_angle(aim) * 20.0 + Vector2(0, -10)
+	var s: float = parts["scale"]
+	var y := -230.0
+	if parts.has("bolt"):
+		var bow_y := float(parts["bow"]["y"])
+		y = bow_y + (float(parts["bolt"]["drawn"]) - bow_y) * BOW_SCALE - float(parts["bolt"]["length"])
+	return position + _turret_xform() * (Vector2(0, y) * s * SPRITE_SCALE)
+
+
+## 0 = string at rest (just fired), 1 = fully drawn and loaded.
+func _draw_amount() -> float:
+	var cd := 1.0 / maxf(rate(), 0.01)
+	var start := minf(0.12, cd * 0.2)
+	var finish := maxf(start + 0.12, cd * 0.8)
+	return smoothstep(start, finish, shot_age)
+
+
+func _draw_parts(accent: Color) -> void:
+	var base: Texture2D = parts["base"]
+	var pivot: Vector2 = parts["pivot"]
+	draw_texture_rect(base, Rect2(-pivot * SPRITE_SCALE, Vector2(base.get_size()) * SPRITE_SCALE), false)
+	var s: float = parts["scale"]
+	var half: float = parts["half"]
+	var kick := -recoil * recoil * (4.0 if parts.has("bow") else 14.0)
+	var xf := _turret_xform() * Transform2D(0.0, Vector2(0, -kick * s * SPRITE_SCALE))
+	draw_set_transform_matrix(xf * Transform2D(0.0, Vector2.ONE * SPRITE_SCALE, 0.0, Vector2.ZERO))
+	draw_texture(parts["turret"], Vector2(-half, -half))
+	if parts.has("bow"):
+		_draw_bow(xf, s, half)
+	elif recoil > 0.5:
+		var tip := Vector2(0, -230.0 * s)
+		draw_circle(tip, 26.0 * recoil, Color(accent, 0.5))
+		draw_circle(tip, 12.0 * recoil, Color(1, 1, 0.9, 0.9))
+	draw_set_transform(Vector2.ZERO, 0.0)
+
+
+func _draw_bow(xf: Transform2D, s: float, half: float) -> void:
+	var bow: Dictionary = parts["bow"]
+	var bolt: Dictionary = parts["bolt"]
+	var p := _draw_amount()
+	var y := float(bow["y"])
+	var span := float(bow["span"])
+	var sweep := float(bow["sweep"])
+	var w := float(bow["w"])
+	var cols: Array = bow["colors"]
+	var tips: Array = bow["tip_colors"]
+	# limbs bend back and inward as the string is pulled
+	var tip_y := y + sweep + 16.0 * p
+	var tip_x := span * (1.0 - 0.16 * p)
+	var rest_y := y + sweep - 4.0
+	var nock_y := lerpf(rest_y, float(bolt["drawn"]), p)
+	if shot_age < 0.25:  # string thrums after release
+		nock_y -= sin(shot_age * 90.0) * 16.0 * exp(-shot_age * 18.0)
+	# scaled up around the bow's own centre on the rail
+	draw_set_transform_matrix(xf * Transform2D(0.0, Vector2.ONE * SPRITE_SCALE * s, 0.0, Vector2.ZERO)
+			* Transform2D(0.0, Vector2.ONE * BOW_SCALE, 0.0, Vector2(0, y * (1.0 - BOW_SCALE))))
+	var nock := Vector2(0, nock_y)
+	for side in [-1.0, 1.0]:
+		var tip := Vector2(tip_x * side, tip_y)
+		draw_line(tip, nock, OUTLINE, 10.0)
+	for side in [-1.0, 1.0]:
+		draw_line(Vector2(tip_x * side, tip_y), nock, Color(0.97, 0.93, 0.82), 5.0)
+	if p > 0.5:  # taut string glints
+		draw_line(Vector2(-tip_x * 0.5, lerpf(tip_y, nock_y, 0.5)), nock, Color(1, 1, 1, (p - 0.5) * 1.2), 1.6)
+	for side in [-1.0, 1.0]:
+		var pts := PackedVector2Array()
+		var a := Vector2(tip_x * side, tip_y)
+		var c := Vector2(span * 0.45 * side, y - 12.0 - 10.0 * p)
+		var b := Vector2(0, y - 8.0)
+		for i in 11:
+			var t := i / 10.0
+			pts.append(a.lerp(c, t).lerp(c.lerp(b, t), t))
+		draw_polyline(pts, OUTLINE, w + 9.0)
+		draw_polyline(pts, Color(cols[2]), w)
+		draw_polyline(pts, Color(cols[1]), w * 0.7)
+		var hl := PackedVector2Array()
+		for q in pts:
+			hl.append(q + Vector2(0, -w * 0.18))
+		draw_polyline(hl, Color(cols[0]), w * 0.3)
+	for side in [-1.0, 1.0]:
+		var tip := Vector2(tip_x * side, tip_y)
+		draw_circle(tip, 9.0, OUTLINE)
+		draw_circle(tip, 6.5, Color(tips[1]))
+		draw_circle(tip + Vector2(-2, -2), 2.5, Color(tips[0]))
+	var start := minf(0.12, 1.0 / maxf(rate(), 0.01) * 0.2)
+	if shot_age >= start and parts.has("bolt_tex"):
+		# a fresh bolt drops onto the rail, then rides back with the string
+		var drop := clampf((shot_age - start) / 0.08, 0.0, 1.0)
+		draw_set_transform_matrix(xf * Transform2D(0.0, Vector2.ONE * SPRITE_SCALE, 0.0, Vector2.ZERO))
+		draw_texture(parts["bolt_tex"], Vector2(-half, -half + (y + (nock_y - y) * BOW_SCALE) * s), Color(1, 1, 1, drop))
 
 
 func _draw_flames(accent: Color) -> void:
